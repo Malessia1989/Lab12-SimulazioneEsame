@@ -55,4 +55,140 @@ public class EventsDao {
 		}
 	}
 
+	public List<Integer> getAnni() {
+		String sql="select distinct year(reported_date) anni " + 
+				"from `events` ";
+		
+		List<Integer> result=new ArrayList<>();
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			List<Event> list = new ArrayList<>() ;
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				try {
+					int anno=res.getInt("anni");
+					
+					result.add(anno);
+					
+				} catch (Throwable t) {
+					t.printStackTrace();
+					System.out.println(res.getInt("id"));
+				}
+			}
+			
+			conn.close();
+			return result ;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
+		}
+	}
+
+	public List<Integer> getDistrettiByAnno(Integer anno) {
+		
+		String sql="select distinct e.district_id id " + 
+				"from `events` as e " + 
+				"where year(e.reported_date) =? ";
+		
+		List<Integer> result= new ArrayList<>();
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setInt(1, anno);
+		
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				try {
+					int district_id=res.getInt("id");
+					
+					result.add(district_id);
+					
+				} catch (Throwable t) {
+					t.printStackTrace();
+					System.out.println(res.getInt("id"));
+				}
+			}
+			
+			conn.close();
+			return result ;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
+		}
+	}
+
+	public Double getLatMedia(Integer anno, Integer i1) {
+		String sql="select avg(e.geo_lat) as mediaLat " + 
+				"from `events` e\n" + 
+				"where year (e.reported_date)=? and e.district_id=? "; 
+		
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setInt(1, anno);
+			st.setInt(2, i1);
+		
+			
+			ResultSet res = st.executeQuery() ;
+			
+			if(res.next()) {
+				conn.close();
+				return res.getDouble("mediaLat");
+				
+				
+			}
+			
+			conn.close();
+			return null;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null ;
+		}
+	}
+
+	public Double getLonMedia(Integer anno, Integer i2) {
+	
+		String sql="select avg(e.geo_lon) as mediaLon " + 
+				"from `events` e " + 
+				"where year (e.reported_date)=? and e.district_id=? "; 
+		
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setInt(1, anno);
+			st.setInt(2, i2);
+		
+			
+			ResultSet res = st.executeQuery() ;
+			
+			if(res.next()) {
+				conn.close();
+				return res.getDouble("mediaLon");
+				
+				
+			}
+			
+			conn.close();
+			return null;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null ;
+		}
+	}
 }

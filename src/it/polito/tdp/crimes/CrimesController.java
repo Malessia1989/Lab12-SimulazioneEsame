@@ -5,9 +5,13 @@
 package it.polito.tdp.crimes;
 
 import java.net.URL;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.model.Model;
+import it.polito.tdp.model.Vicino;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -29,10 +33,10 @@ public class CrimesController {
     private ComboBox<Integer> boxAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxMese"
-    private ComboBox<?> boxMese; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxGiorno"
-    private ComboBox<?> boxGiorno; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxGiorno; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnCreaReteCittadina"
     private Button btnCreaReteCittadina; // Value injected by FXMLLoader
@@ -57,14 +61,65 @@ public class CrimesController {
     	this.model.creaGrafo(anno);
     	
     	for(Integer d: this.model.getDistretti()) {
+    		List<Vicino> vicini = this.model.getVicini(d);
+    		txtResult.appendText("\nVICINI DI DISTRETTO " + d);
+    		for(Vicino v : vicini) {
+    			txtResult.appendText("\n" + v.getV() + " d = " + v.getDistanza());
     		
     		
+    		}
     	}
     	
     }
 
     @FXML
     void doSimula(ActionEvent event) {
+    	Integer anno,mese,giorno,N;
+    	txtResult.clear();
+    	
+    	try {
+    		N = Integer.parseInt(txtN.getText());
+    	} catch(NumberFormatException e) {
+    		txtResult.clear();
+    		txtResult.appendText("Devi inserire un numero N di agenti");
+    		return;
+    	}
+    	
+    	anno = boxAnno.getValue();
+    	if(anno == null) {
+    		txtResult.clear();
+    		txtResult.appendText("Devi selezionare un anno");
+    		return;
+    	}
+    	
+    	mese = boxMese.getValue();
+    	if(mese == null) {
+    		txtResult.clear();
+    		txtResult.appendText("Devi selezionare un mese");
+    		return;
+    	}
+    	
+    	giorno = boxGiorno.getValue();
+    	if(giorno == null) {
+    		txtResult.clear();
+    		txtResult.appendText("Devi selezionare un giorno");
+    		return;
+    	}
+    
+        try
+        {
+            LocalDate.of(anno, mese, giorno);
+        }
+        catch(DateTimeException e)
+        {
+        	txtResult.clear();
+    		txtResult.appendText("Data non corretta");
+            return;
+        }
+
+        txtResult.clear();
+        txtResult.appendText("SIMULO CON " + N + " agenti");
+        txtResult.appendText("\nCRIMINI MAL GESTITI: " +this.model.simula(anno, mese, giorno, N));
 
     }
 

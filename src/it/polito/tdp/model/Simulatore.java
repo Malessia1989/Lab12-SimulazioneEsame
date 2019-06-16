@@ -68,7 +68,7 @@ public class Simulatore {
 		
 	}
 	
-	public void run() {
+	public int run() {
 		Evento e;	
 		
 		while (( e= queue.poll()) != null){
@@ -121,6 +121,7 @@ public class Simulatore {
 			}
 		}
 		System.out.println("TERMINATO !! MAL GESTITI: "+ this.malGestiti);
+		return this.malGestiti;
 	}
 
 	private Long getDuration(String offense_category_id) {

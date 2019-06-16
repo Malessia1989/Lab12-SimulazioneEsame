@@ -77,10 +77,10 @@ public class Model {
 	public List<Integer> getDistretti() {
 		return distretti;
 	}
-	public void simula(Integer anno, Integer mese, Integer giorno, Integer N) {
+	public int simula(Integer anno, Integer mese, Integer giorno, Integer N) {
 		Simulatore s= new Simulatore();
 		s.init(N, anno, mese, giorno, grafo);
-		s.run();
+		return s.run();
 		
 	}
 	

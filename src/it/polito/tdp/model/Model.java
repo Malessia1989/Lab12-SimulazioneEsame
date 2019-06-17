@@ -2,6 +2,7 @@ package it.polito.tdp.model;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.jgrapht.Graph;
@@ -32,7 +33,7 @@ public class Model {
 		return dao.getAnni();
 	}
 
-	public String creaGrafo(Integer anno) {
+	public void creaGrafo(Integer anno) {
 		distretti= dao.getDistrettiByAnno(anno);
 		Graphs.addAllVertices(grafo, this.distretti);
 		
@@ -42,7 +43,7 @@ public class Model {
 					if(this.grafo.getEdge(i1, i2) == null) {
 						 
 						Double LatMediai1=dao.getLatMedia(anno, i1);
-						Double LonMediai1=dao.getLonMedia(anno, i2);
+						Double LonMediai1=dao.getLonMedia(anno, i1);
 						
 						Double LatMediai2=dao.getLatMedia(anno, i2);
 						Double LonMediai2=dao.getLonMedia(anno, i2);
@@ -62,28 +63,26 @@ public class Model {
 		System.out.println("# vertici: " + this.grafo.vertexSet().size());
 		System.out.println("# archi: " + this.grafo.edgeSet().size());
 		
-		String ris="";
-		for(Integer i: grafo.vertexSet()) {
-			List<Integer> vicini =Graphs.neighborListOf(grafo, i);
-			Collections.sort(vicini, new Comparator<Integer>() {
-
-				@Override
-				public int compare(Integer a1, Integer a2) {
-					DefaultWeightedEdge arco1= grafo.getEdge(a1, i);
-					double peso1= grafo.getEdgeWeight(arco1);
-					
-					DefaultWeightedEdge arco2= grafo.getEdge(a2, i);
-					double peso2= grafo.getEdgeWeight(arco2);
-					
-					return (int) (peso1-peso2);
-				}
-			});
+	}
+	
+	public List <Vicino> getVicini(Integer distretto){
+		List<Vicino> vicini= new LinkedList<>();
+		List<Integer> neighbor=Graphs.neighborListOf(grafo, distretto);
+		for(Integer n: neighbor) {
+			//aggiungo alla lista il vicino n e il peso dell'arco(distanza) tra distreto e n
 			
-			ris+=vicini.toString() +"\n";
-			}
+			vicini.add(new Vicino(n, grafo.getEdgeWeight(grafo.getEdge(distretto, n)) ));
 			
+			
+		}
+		Collections.sort(vicini);
+		return vicini;
 		
-		return ris;
+		
+	}
+
+	public List<Integer> getDistretti() {
+		return distretti;
 	}
 	
 }
